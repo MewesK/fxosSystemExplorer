@@ -1,35 +1,74 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf-8">
-		
-		<title>System Explorer</title>
-		
-		<meta name="description" content="Firefox OS System Explorer">
-		<meta name="viewport" content="width=device-width, user-scalable=no">
+    <head>
+        <meta charset="utf-8">
 
-		<!-- Building blocks -->
-		<link rel="stylesheet" href="style/buttons.css">
-		<link rel="stylesheet" href="style/confirm.css">
-		<link rel="stylesheet" href="style/headers.css">
-		<link rel="stylesheet" href="style/input_areas.css">
-		
-		<link rel="stylesheet" href="style_unstable/lists.css">
-		<link rel="stylesheet" href="style_unstable/toolbars.css">
-		
-		<link rel="stylesheet" href="style/transitions.css">
-		<link rel="stylesheet" href="style/fonts.css">
-		<link rel="stylesheet" href="style/app.css">
-		
-		<!-- Icons -->
-		<link rel="stylesheet" href="icons/styles/action_icons.css">
-		<link rel="stylesheet" href="icons/styles/media_icons.css">
-		<link rel="stylesheet" href="icons/styles/comms_icons.css">
-		<link rel="stylesheet" href="icons/styles/settings_icons.css">
-	</head>
+        <title>System Explorer</title>
 
-	<body>
-		<!-- JavaScript -->
-		<script type="text/javascript" src="js/app.js" defer></script>
-	</body>
+        <meta name="description" content="Firefox OS System Explorer">
+        <meta name="viewport" content="width=device-width, user-scalable=no">
+
+        <!-- Building blocks -->
+        <link rel="stylesheet" href="style/action_menu.css">
+        <link rel="stylesheet" href="style/buttons.css">
+        <link rel="stylesheet" href="style/confirm.css">
+        <link rel="stylesheet" href="style/headers.css">
+        <link rel="stylesheet" href="style/input_areas.css">
+        <link rel="stylesheet" href="style/switches.css">
+
+        <link rel="stylesheet" href="style_unstable/lists.css">
+        <link rel="stylesheet" href="style_unstable/toolbars.css">
+
+        <link rel="stylesheet" href="style/transitions.css">
+        <link rel="stylesheet" href="style/fonts.css">
+        <link rel="stylesheet" href="style/app.css">
+
+        <!-- Icons -->
+        <link rel="stylesheet" href="icons/styles/action_icons.css">
+        <link rel="stylesheet" href="icons/styles/media_icons.css">
+        <link rel="stylesheet" href="icons/styles/comms_icons.css">
+        <link rel="stylesheet" href="icons/styles/settings_icons.css">
+
+        <!-- JavaScript -->
+        <script defer type="text/javascript" src="js/dom_helper.js"></script>
+        <script defer type="text/javascript" src="js/tree_explorer.js"></script>
+        <script defer type="text/javascript" src="js/object_node.js"></script>
+        <script defer type="text/javascript" src="js/app.js"></script>
+    </head>
+
+    <body>
+        <!-- Templates -->
+        <section id="view-main-template" class="view-main template skin-organic" role="region">
+            <header>
+                <a id="btn-view-back" href="#"><span class="icon icon-back"></span></a>
+                <menu type="toolbar">
+                    <button id="btn-filter"><span class="icon icon-edit"></span></button>
+                </menu>
+                <h1></h1>
+            </header>
+            <form id="search-form" class="search" role="search">
+                <p>
+                    <input id="search-field" type="search" name="search" placeholder="Search">
+                    <button id="btn-search-clear" type="reset"></button>
+                </p>
+            </form>
+            <article class="content scrollable">
+                <div data-type="list">
+                    <ul class="items"></ul>
+                </div>
+            </article>
+        </section>
+
+        <section id="view-filter-template" class="view-filter template" data-position="back">
+            <form role="dialog" data-type="action">
+                <header>Filter</header>
+                <menu>
+                    <div data-type="list">
+                        <ul class="items"></ul>
+                    </div>
+                    <button>Cancel</button>
+                </menu>
+            </form>
+        </section>
+    </body>
 </html>

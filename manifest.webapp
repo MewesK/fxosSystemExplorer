@@ -9,7 +9,7 @@
 	},
 	"developer": {
 		"name": "MewK",
-		"url": "http://systemexplorer.ffos.mewk.net"
+		"url": "http://systemexplorer.fxos.mewk.net"
 	},
 	"installs_allowed_from": ["*"],
 	"default_locale": "en",
