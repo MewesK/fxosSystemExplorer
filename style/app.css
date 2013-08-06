@@ -179,3 +179,11 @@ ul, ol, li {
     float: right; 
     clear: both;
 }
+
+.hidden-by-search {
+    display: none !important;
+}
+
+.hidden-by-filter {
+    display: none !important;
+}

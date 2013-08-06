@@ -29,18 +29,50 @@ var TreeExplorer = {
         event.preventDefault();
         
         var node = TreeExplorer.node.item(event.target.parentElement.dataset.key);
-
         TreeExplorer.createView(node);
         TreeExplorer.setView(node);
     },
 
-    'handleFilter': function handleClick(event) {
-        console.log('handleFilter', event);
+    'handleFilterOpen': function handleFilterOpen(event) {
+        console.log('handleFilterOpen', event);
         event.preventDefault();
         
         var node = TreeExplorer.node.item(event.target.parentElement.dataset.key);
-        
         document.querySelector('#view-filter-' + node.getFilterId()).style.display = '';
+    },
+
+    'handleFilterCancel': function handleFilterCancel(event) {
+        console.log('handleFilterCancel', event);
+        event.preventDefault();
+        
+        document.querySelector('#' + event.target.dataset.view).style.display = 'none';
+    },
+
+    'handleFilterToggle': function handleFilterToggle(event) {
+        console.log('handleFilterToggle', event);
+        
+        var type = event.target.dataset.type;
+        var checked = event.target.checked;
+        
+        console.log(type, checked);      
+        
+        var viewMainElements = document.querySelectorAll('.view-main:not(.template)');
+        for (var i = 0; i < viewMainElements.length; i++) {
+            var viewMainElement = viewMainElements.item(i);
+            var filters = JSON.parse(viewMainElement.dataset.filters);
+            filters[type] = checked;
+            viewMainElement.dataset.filters = JSON.stringify(filters);
+            
+            var itemElements = viewMainElement.querySelectorAll('.items li');
+            for (var i = 0; i < itemElements.length; i++) {
+                var itemElement = itemElements.item(i);
+                if (filters[itemElement.dataset.type] === false) {
+                    itemElement.classList.add('hidden-by-filter');
+                } else {
+                    itemElement.classList.remove('hidden-by-filter');
+                }
+            }
+        }
     },
 
     'handleSearchSubmit': function handleSearchCancel(event) {
@@ -62,9 +94,10 @@ var TreeExplorer = {
         for (var i = 0; i < itemElements.length; i++) {
             var itemElement = itemElements.item(i);
             if (itemElement.querySelector('p:first-child').textContent.toLowerCase().contains(searchTerm.toLowerCase())) {
+                itemElement.classList.remove('hidden-by-search');
                 itemElement.style.display = '';
             } else {
-                itemElement.style.display = 'none';
+                itemElement.classList.add('hidden-by-search');
             }
         }
     },
@@ -77,9 +110,9 @@ var TreeExplorer = {
         inputElement.value = '';
         inputElement.blur();
 
-        var itemElements = document.querySelectorAll('.current-view .items li');
+        var itemElements = document.querySelectorAll('.current-view .items li.hidden-by-search');
         for (var i = 0; i < itemElements.length; i++) {
-            itemElements.item(i).style.display = '';
+            itemElements.item(i).classList.remove('hidden-by-search');
         }
     },
 
@@ -107,7 +140,7 @@ var TreeExplorer = {
         }
         
         // item filter button
-        viewMainElement.querySelector('#btn-filter').addEventListener('click', TreeExplorer.handleFilter);
+        viewMainElement.querySelector('#btn-filter').addEventListener('click', TreeExplorer.handleFilterOpen);
 
         // search field
         viewMainElement.querySelector('#search-field').addEventListener('input', TreeExplorer.handleSearchInput);
@@ -119,26 +152,56 @@ var TreeExplorer = {
         viewFilterElement.id = 'view-filter-' + node.getFilterId();
         viewFilterElement.classList.remove('template');
         viewFilterElement.style.display = 'none';
+        
+        // item filter cancel button
+        viewFilterElement.querySelector('button').dataset.view = viewFilterElement.id;
+        viewFilterElement.querySelector('button').addEventListener('click', TreeExplorer.handleFilterCancel);
 
         var keys = node.getKeys();
+        var filters = {};
+        
+        // use last filter settings if available
+        var lastViewMainElement = document.querySelector('.view-main:not(.template)');
+        console.log('lastFilters', lastViewMainElement);
+        if (lastViewMainElement) {
+            filters = JSON.parse(lastViewMainElement.dataset.filters);
+        }
+        
         for (var type in keys) {
+            if (!(type in filters)) {
+                filters[type] = true;
+            }
+            
             for (var i in keys[type]) {
                 var element = node.item(keys[type][i]).getElement();
+                element.dataset.type = filters[type];
                 
                 if (type == 'Object') {
                     element.querySelector('a').dataset.key = keys[type][i];
                     element.querySelector('a').addEventListener('click', TreeExplorer.handleClick);
                 }
 
+                // hide if filter is set
+                if (filters[type] === false) {
+                    element.classList.add('hidden-by-filter');
+                }
+
                 viewMainElement.querySelector('.items').appendChild(element);
             }
             
             var filterElement = DOMHelper.createElement('<p>Show ' + type + 's<label class="pack-switch"><input type="checkbox" checked><span></span></label></p>');
+            filterElement.querySelector('input').dataset.type = type;
+            filterElement.querySelector('input').addEventListener('click', TreeExplorer.handleFilterToggle);
+            
             viewFilterElement.querySelector('.items').appendChild(filterElement);
         }
 
+        viewMainElement.dataset.filters = JSON.stringify(filters);
+
         document.querySelector('body').appendChild(viewMainElement);
-        document.querySelector('body').appendChild(viewFilterElement);
+        if (document.querySelector('#'+'view-filter-' + node.getFilterId()) == null) {
+            document.querySelector('body').appendChild(viewFilterElement);  
+        }
     },
 
     'setView' : function setView(node) {
